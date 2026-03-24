@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="nyctaxi2026" database="LogicalDesign" id="7bca2830-7e2d-455c-8be0-2f3083fa6bf3" >
+	<schema name="dw" >
+		<table name="dim_calendar" prior="dim_calenda" >
+			<column name="calendar_id" type="BIGINT" mandatory="y" />
+			<column name="year_number" type="BIGINT" />
+			<column name="month_number" type="BIGINT" />
+			<column name="day_number" type="INT" />
+			<column name="hour_number" type="INT" />
+			<column name="quarter_number" type="INT" />
+			<column name="iso_date" prior="date" type="DATETIME" />
+			<column name="week_of_year" type="INT" />
+			<column name="week_of_month" type="INT" />
+			<column name="holiday" type="BOOLEAN" />
+			<column name="season_name" type="VARCHAR" length="100" />
+			<column name="day_name" type="VARCHAR" length="100" />
+			<column name="month_name" type="VARCHAR" length="100" />
+			<index name="pk_dim_calendar" unique="PRIMARY_KEY" >
+				<column name="calendar_id" />
+			</index>
+		</table>
+		<table name="dim_location" prior="dim_loc" >
+			<column name="location_id" type="INT" mandatory="y" />
+			<column name="borough" type="VARCHAR" length="100" />
+			<column name="city" type="VARCHAR" length="100" />
+			<column name="latitude" type="DOUBLE" />
+			<column name="longitude" type="DOUBLE" />
+			<index name="pk_dim_location" unique="PRIMARY_KEY" >
+				<column name="location_id" />
+			</index>
+		</table>
+		<table name="dim_payment_type" prior="dimpayment_type" >
+			<column name="payment_type_id" type="INT" mandatory="y" />
+			<column name="payment_type_name" type="VARCHAR" length="100" />
+			<index name="pk_payment_type" unique="PRIMARY_KEY" >
+				<column name="payment_type_id" />
+			</index>
+		</table>
+		<table name="dim_rate_code" prior="dim_rate_cod" >
+			<column name="rate_code_id" type="INT" mandatory="y" />
+			<column name="rate_code_name" type="VARCHAR" length="100" />
+			<index name="pk_dim_rate_code" unique="PRIMARY_KEY" >
+				<column name="rate_code_id" />
+			</index>
+		</table>
+		<table name="dim_trip_type" prior="dim_trip_ty" >
+			<column name="trip_type_id" type="INT" mandatory="y" />
+			<column name="trip_type_name" type="VARCHAR" length="100" />
+			<index name="pk_dim_trip_type" unique="PRIMARY_KEY" >
+				<column name="trip_type_id" />
+			</index>
+		</table>
+		<table name="dim_vendor" prior="dim_vendo" >
+			<column name="vendor_id" type="INT" mandatory="y" />
+			<column name="vendor_name" type="VARCHAR" length="100" />
+			<index name="pk_dim_vendor" unique="PRIMARY_KEY" >
+				<column name="vendor_id" />
+			</index>
+		</table>
+		<table name="fact_trip" prior="fact_tri" >
+			<column name="trip_id" type="BIGINT" mandatory="y" />
+			<column name="pickup_date_id" type="BIGINT" mandatory="y" />
+			<column name="dropoff_date_id" type="BIGINT" mandatory="y" />
+			<column name="pickup_location_id" type="INT" mandatory="y" />
+			<column name="dropoff_location_id" type="INT" mandatory="y" />
+			<column name="vendor_id" type="INT" mandatory="y" />
+			<column name="ratecode_id" type="INT" mandatory="y" />
+			<column name="payment_type_id" type="INT" mandatory="y" />
+			<column name="trip_type_id" type="INT" mandatory="y" />
+			<column name="passenger_count" type="INT" />
+			<column name="trip_distance" type="DOUBLE" />
+			<column name="fare_amount" type="DECIMAL" />
+			<column name="tip_amount" type="DECIMAL" />
+			<index name="pk_fact_trip" unique="PRIMARY_KEY" >
+				<column name="trip_id" />
+			</index>
+			<fk name="fk_fact_trip_dim_vendor" to_schema="dw" to_table="dim_vendor" type="NonIdentifying" mandatory="y" cardinality="OneMore" range_from="0" range_to="0" >
+				<fk_column name="vendor_id" pk="vendor_id" />
+			</fk>
+			<fk name="fk_fact_trip_dim_rate_code" to_schema="dw" to_table="dim_rate_code" type="NonIdentifying" mandatory="y" cardinality="OneMore" range_from="0" range_to="0" >
+				<fk_column name="ratecode_id" pk="rate_code_id" />
+			</fk>
+			<fk name="fk_fact_trip_dim_trip_type" to_schema="dw" to_table="dim_trip_type" type="NonIdentifying" mandatory="y" cardinality="OneMore" range_from="0" range_to="0" >
+				<fk_column name="trip_type_id" pk="trip_type_id" />
+			</fk>
+			<fk name="fk_fact_trip_dim_payment_type" to_schema="dw" to_table="dim_payment_type" type="NonIdentifying" mandatory="y" cardinality="OneMore" range_from="0" range_to="0" >
+				<fk_column name="payment_type_id" pk="payment_type_id" />
+			</fk>
+			<fk name="fk_fact_trip_dim_location" to_schema="dw" to_table="dim_location" type="NonIdentifying" mandatory="y" cardinality="OneMore" range_from="0" range_to="0" >
+				<fk_column name="pickup_location_id" pk="location_id" />
+			</fk>
+			<fk name="fk_fact_trip_dim_location_0" to_schema="dw" to_table="dim_location" type="NonIdentifying" mandatory="y" cardinality="OneMore" range_from="0" range_to="0" >
+				<fk_column name="dropoff_location_id" pk="location_id" />
+			</fk>
+			<fk name="fk_fact_trip_dim_calendar" to_schema="dw" to_table="dim_calendar" type="NonIdentifying" mandatory="y" cardinality="OneMore" range_from="0" range_to="0" >
+				<fk_column name="pickup_date_id" pk="calendar_id" />
+			</fk>
+			<fk name="fk_fact_trip_dim_calendar_0" to_schema="dw" to_table="dim_calendar" type="NonIdentifying" mandatory="y" cardinality="OneMore" range_from="0" range_to="0" >
+				<fk_column name="dropoff_date_id" pk="calendar_id" />
+			</fk>
+		</table>
+	</schema>
+	<diagram_group name="Default" id="64b919ec-7092-41f5-87e8-3f2eb38889c7" >
+		<diagram name="Default Diagram" id="beb1e2d4-4a4f-40df-a757-239749f3a0d4" show_relation="columns" >
+			<entity schema="dw" name="dim_calendar" color="C1D8EE" x="418" y="741" />
+			<entity schema="dw" name="dim_location" color="C1D8EE" x="456" y="57" />
+			<entity schema="dw" name="dim_payment_type" color="C1D8EE" x="741" y="494" />
+			<entity schema="dw" name="dim_rate_code" color="C1D8EE" x="95" y="304" />
+			<entity schema="dw" name="dim_trip_type" color="C1D8EE" x="57" y="494" />
+			<entity schema="dw" name="dim_vendor" color="C1D8EE" x="798" y="247" />
+			<entity schema="dw" name="fact_trip" color="C1D8EE" x="418" y="323" />
+		</diagram>
+	</diagram_group>
+</project>

@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="nyctaxi2026" database="Snowflake" id="0eddef66-5568-4059-b7d6-ae9dca4ff38b" >
+	<schema name="DW" >
+		<table name="DIM_CALENDAR" prior="dim_calendar" >
+			<column name="CALENDAR_ID" prior="calendar_id" type="BIGINT" mandatory="y" />
+			<column name="YEAR_NUMBER" prior="year_number" type="BIGINT" />
+			<column name="MONTH_NUMBER" prior="month_number" type="BIGINT" />
+			<column name="DAY_NUMBER" prior="day_number" type="INT" />
+			<column name="HOUR_NUMBER" prior="hour_number" type="INT" />
+			<column name="QUARTER_NUMBER" prior="quarter_number" type="INT" />
+			<column name="ISO_DATE" prior="iso_date" type="DATETIME" />
+			<column name="WEEK_OF_YEAR" prior="week_of_year" type="INT" />
+			<column name="WEEK_OF_MONTH" prior="week_of_month" type="INT" />
+			<column name="HOLIDAY" prior="holiday" type="BOOLEAN" />
+			<column name="SEASON_NAME" prior="season_name" type="VARCHAR" length="100" />
+			<column name="DAY_NAME" prior="day_name" type="VARCHAR" length="100" />
+			<column name="MONTH_NAME" prior="month_name" type="VARCHAR" length="100" />
+			<index name="PK_DIM_CALENDAR" unique="PRIMARY_KEY" >
+				<column name="CALENDAR_ID" />
+			</index>
+		</table>
+		<table name="DIM_LOCATION" prior="dim_location" >
+			<column name="LOCATION_ID" prior="location_id" type="INT" mandatory="y" />
+			<column name="BOROUGH" prior="borough" type="VARCHAR" length="100" />
+			<column name="CITY" prior="city" type="VARCHAR" length="100" />
+			<column name="LATITUDE" prior="latitude" type="DOUBLE" />
+			<column name="LONGITUDE" prior="longitude" type="DOUBLE" />
+			<index name="PK_DIM_LOCATION" unique="PRIMARY_KEY" >
+				<column name="LOCATION_ID" />
+			</index>
+		</table>
+		<table name="DIM_PAYMENT_TYPE" prior="dim_payment_type" >
+			<column name="PAYMENT_TYPE_ID" prior="payment_type_id" type="INT" mandatory="y" />
+			<column name="PAYMENT_TYPE_NAME" prior="payment_type_name" type="VARCHAR" length="100" />
+			<index name="PK_PAYMENT_TYPE" unique="PRIMARY_KEY" >
+				<column name="PAYMENT_TYPE_ID" />
+			</index>
+		</table>
+		<table name="DIM_RATE_CODE" prior="dim_rate_code" >
+			<column name="RATE_CODE_ID" prior="rate_code_id" type="INT" mandatory="y" />
+			<column name="RATE_CODE_NAME" prior="rate_code_name" type="VARCHAR" length="100" />
+			<index name="PK_DIM_RATE_CODE" unique="PRIMARY_KEY" >
+				<column name="RATE_CODE_ID" />
+			</index>
+		</table>
+		<table name="DIM_TRIP_TYPE" prior="dim_trip_type" >
+			<column name="TRIP_TYPE_ID" prior="trip_type_id" type="INT" mandatory="y" />
+			<column name="TRIP_TYPE_NAME" prior="trip_type_name" type="VARCHAR" length="100" />
+			<index name="PK_DIM_TRIP_TYPE" unique="PRIMARY_KEY" >
+				<column name="TRIP_TYPE_ID" />
+			</index>
+		</table>
+		<table name="DIM_VENDOR" prior="dim_vendor" >
+			<column name="VENDOR_ID" prior="vendor_id" type="INT" mandatory="y" />
+			<column name="VENDOR_NAME" prior="vendor_name" type="VARCHAR" length="100" />
+			<index name="PK_DIM_VENDOR" unique="PRIMARY_KEY" >
+				<column name="VENDOR_ID" />
+			</index>
+		</table>
+		<table name="FACT_TRIP" prior="fact_trip" >
+			<column name="TRIP_ID" prior="trip_id" type="BIGINT" mandatory="y" />
+			<column name="PICKUP_DATE_ID" prior="pickup_date_id" type="BIGINT" mandatory="y" />
+			<column name="DROPOFF_DATE_ID" prior="dropoff_date_id" type="BIGINT" mandatory="y" />
+			<column name="PICKUP_LOCATION_ID" prior="pickup_location_id" type="INT" mandatory="y" />
+			<column name="DROPOFF_LOCATION_ID" prior="dropoff_location_id" type="INT" mandatory="y" />
+			<column name="VENDOR_ID" prior="vendor_id" type="INT" mandatory="y" />
+			<column name="RATECODE_ID" prior="ratecode_id" type="INT" mandatory="y" />
+			<column name="PAYMENT_TYPE_ID" prior="payment_type_id" type="INT" mandatory="y" />
+			<column name="TRIP_TYPE_ID" prior="trip_type_id" type="INT" mandatory="y" />
+			<column name="PASSENGER_COUNT" prior="passenger_count" type="INT" />
+			<column name="TRIP_DISTANCE" prior="trip_distance" type="DOUBLE" />
+			<column name="FARE_AMOUNT" prior="fare_amount" type="DECIMAL" />
+			<column name="TIP_AMOUNT" prior="tip_amount" type="DECIMAL" />
+			<index name="PK_FACT_TRIP" unique="PRIMARY_KEY" >
+				<column name="TRIP_ID" />
+			</index>
+			<fk name="FK_FACT_TRIP_DIM_VENDOR" to_schema="DW" to_table="DIM_VENDOR" >
+				<fk_column name="VENDOR_ID" pk="VENDOR_ID" />
+			</fk>
+			<fk name="FK_FACT_TRIP_DIM_RATE_CODE" to_schema="DW" to_table="DIM_RATE_CODE" >
+				<fk_column name="RATECODE_ID" pk="RATE_CODE_ID" />
+			</fk>
+			<fk name="FK_FACT_TRIP_DIM_TRIP_TYPE" to_schema="DW" to_table="DIM_TRIP_TYPE" >
+				<fk_column name="TRIP_TYPE_ID" pk="TRIP_TYPE_ID" />
+			</fk>
+			<fk name="FK_FACT_TRIP_DIM_PAYMENT_TYPE" to_schema="DW" to_table="DIM_PAYMENT_TYPE" >
+				<fk_column name="PAYMENT_TYPE_ID" pk="PAYMENT_TYPE_ID" />
+			</fk>
+			<fk name="FK_FACT_TRIP_DIM_LOCATION" to_schema="DW" to_table="DIM_LOCATION" >
+				<fk_column name="PICKUP_LOCATION_ID" pk="LOCATION_ID" />
+			</fk>
+			<fk name="FK_FACT_TRIP_DIM_LOCATION_0" to_schema="DW" to_table="DIM_LOCATION" >
+				<fk_column name="DROPOFF_LOCATION_ID" pk="LOCATION_ID" />
+			</fk>
+			<fk name="FK_FACT_TRIP_DIM_CALENDAR" to_schema="DW" to_table="DIM_CALENDAR" >
+				<fk_column name="PICKUP_DATE_ID" pk="CALENDAR_ID" />
+			</fk>
+			<fk name="FK_FACT_TRIP_DIM_CALENDAR_0" to_schema="DW" to_table="DIM_CALENDAR" >
+				<fk_column name="DROPOFF_DATE_ID" pk="CALENDAR_ID" />
+			</fk>
+		</table>
+	</schema>
+	<diagram_group name="Default" id="de8ef099-8931-4cf7-aaa8-8d903206b184" >
+		<diagram name="Default Diagram" id="4e2aa9ad-4122-43f6-8492-699a9e9d270c" confirmed="y" show_relation="columns" >
+			<entity schema="DW" name="DIM_CALENDAR" color="C1D8EE" x="418" y="684" />
+			<entity schema="DW" name="DIM_LOCATION" color="C1D8EE" x="456" y="57" />
+			<entity schema="DW" name="DIM_PAYMENT_TYPE" color="C1D8EE" x="741" y="494" />
+			<entity schema="DW" name="DIM_RATE_CODE" color="C1D8EE" x="95" y="304" />
+			<entity schema="DW" name="DIM_TRIP_TYPE" color="C1D8EE" x="57" y="494" />
+			<entity schema="DW" name="DIM_VENDOR" color="C1D8EE" x="798" y="247" />
+			<entity schema="DW" name="FACT_TRIP" color="C1D8EE" x="418" y="323" />
+			<script name="SQL_Editor" id="819f3eae-e043-4235-b953-6a9308900cd9" language="SQL" >
+				<string><![CDATA[CREATE SCHEMA DW;
+
+CREATE  TABLE DW.DIM_CALENDAR ( 
+	CALENDAR_ID          BIGINT NOT NULL   ,
+	YEAR_NUMBER          BIGINT    ,
+	MONTH_NUMBER         BIGINT    ,
+	DAY_NUMBER           INT    ,
+	HOUR_NUMBER          INT    ,
+	QUARTER_NUMBER       INT    ,
+	ISO_DATE             DATETIME    ,
+	WEEK_OF_YEAR         INT    ,
+	WEEK_OF_MONTH        INT    ,
+	HOLIDAY              BOOLEAN    ,
+	SEASON_NAME          VARCHAR(100)    ,
+	DAY_NAME             VARCHAR(100)    ,
+	MONTH_NAME           VARCHAR(100)    ,
+	CONSTRAINT PK_DIM_CALENDAR PRIMARY KEY ( CALENDAR_ID )
+ );
+
+CREATE  TABLE DW.DIM_LOCATION ( 
+	LOCATION_ID          INT NOT NULL   ,
+	BOROUGH              VARCHAR(100)    ,
+	CITY                 VARCHAR(100)    ,
+	LATITUDE             DOUBLE    ,
+	LONGITUDE            DOUBLE    ,
+	CONSTRAINT PK_DIM_LOCATION PRIMARY KEY ( LOCATION_ID )
+ );
+
+CREATE  TABLE DW.DIM_PAYMENT_TYPE ( 
+	PAYMENT_TYPE_ID      INT NOT NULL   ,
+	PAYMENT_TYPE_NAME    VARCHAR(100)    ,
+	CONSTRAINT PK_PAYMENT_TYPE PRIMARY KEY ( PAYMENT_TYPE_ID )
+ );
+
+CREATE  TABLE DW.DIM_RATE_CODE ( 
+	RATE_CODE_ID         INT NOT NULL   ,
+	RATE_CODE_NAME       VARCHAR(100)    ,
+	CONSTRAINT PK_DIM_RATE_CODE PRIMARY KEY ( RATE_CODE_ID )
+ );
+
+CREATE  TABLE DW.DIM_TRIP_TYPE ( 
+	TRIP_TYPE_ID         INT NOT NULL   ,
+	TRIP_TYPE_NAME       VARCHAR(100)    ,
+	CONSTRAINT PK_DIM_TRIP_TYPE PRIMARY KEY ( TRIP_TYPE_ID )
+ );
+
+CREATE  TABLE DW.DIM_VENDOR ( 
+	VENDOR_ID            INT NOT NULL   ,
+	VENDOR_NAME          VARCHAR(100)    ,
+	CONSTRAINT PK_DIM_VENDOR PRIMARY KEY ( VENDOR_ID )
+ );
+
+CREATE  TABLE DW.FACT_TRIP ( 
+	TRIP_ID              BIGINT NOT NULL   ,
+	PICKUP_DATE_ID       BIGINT NOT NULL   ,
+	DROPOFF_DATE_ID      BIGINT NOT NULL   ,
+	PICKUP_LOCATION_ID   INT NOT NULL   ,
+	DROPOFF_LOCATION_ID  INT NOT NULL   ,
+	VENDOR_ID            INT NOT NULL   ,
+	RATECODE_ID          INT NOT NULL   ,
+	PAYMENT_TYPE_ID      INT NOT NULL   ,
+	TRIP_TYPE_ID         INT NOT NULL   ,
+	PASSENGER_COUNT      INT    ,
+	TRIP_DISTANCE        DOUBLE    ,
+	FARE_AMOUNT          DECIMAL    ,
+	TIP_AMOUNT           DECIMAL    ,
+	CONSTRAINT PK_FACT_TRIP PRIMARY KEY ( TRIP_ID )
+ );
+
+ALTER TABLE DW.FACT_TRIP ADD CONSTRAINT FK_FACT_TRIP_DIM_VENDOR FOREIGN KEY ( VENDOR_ID ) REFERENCES DW.DIM_VENDOR( VENDOR_ID ) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+ALTER TABLE DW.FACT_TRIP ADD CONSTRAINT FK_FACT_TRIP_DIM_RATE_CODE FOREIGN KEY ( RATECODE_ID ) REFERENCES DW.DIM_RATE_CODE( RATE_CODE_ID ) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+ALTER TABLE DW.FACT_TRIP ADD CONSTRAINT FK_FACT_TRIP_DIM_TRIP_TYPE FOREIGN KEY ( TRIP_TYPE_ID ) REFERENCES DW.DIM_TRIP_TYPE( TRIP_TYPE_ID ) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+ALTER TABLE DW.FACT_TRIP ADD CONSTRAINT FK_FACT_TRIP_DIM_PAYMENT_TYPE FOREIGN KEY ( PAYMENT_TYPE_ID ) REFERENCES DW.DIM_PAYMENT_TYPE( PAYMENT_TYPE_ID ) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+ALTER TABLE DW.FACT_TRIP ADD CONSTRAINT FK_FACT_TRIP_DIM_LOCATION FOREIGN KEY ( PICKUP_LOCATION_ID ) REFERENCES DW.DIM_LOCATION( LOCATION_ID ) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+ALTER TABLE DW.FACT_TRIP ADD CONSTRAINT FK_FACT_TRIP_DIM_LOCATION_0 FOREIGN KEY ( DROPOFF_LOCATION_ID ) REFERENCES DW.DIM_LOCATION( LOCATION_ID ) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+ALTER TABLE DW.FACT_TRIP ADD CONSTRAINT FK_FACT_TRIP_DIM_CALENDAR FOREIGN KEY ( PICKUP_DATE_ID ) REFERENCES DW.DIM_CALENDAR( CALENDAR_ID ) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+ALTER TABLE DW.FACT_TRIP ADD CONSTRAINT FK_FACT_TRIP_DIM_CALENDAR_0 FOREIGN KEY ( DROPOFF_DATE_ID ) REFERENCES DW.DIM_CALENDAR( CALENDAR_ID ) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+]]></string>
+			</script>
+		</diagram>
+	</diagram_group>
+</project>
